@@ -13,4 +13,6 @@ st.markdown("""
 
 """)
 
+st.radio("Which dessert is best?", ["Cake", "Ice Cream", "Pie"])
+
 
