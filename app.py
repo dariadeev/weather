@@ -1,25 +1,35 @@
-import json
-import requests
-import streamlit as st
+import json, requests, streamlit as st, datetime as dt
+from datetime import datetime, timezone
+import pytz
 
-def default_location(def_location = 'Israel'):
+def date_time(city_name, diff_tz=None):
+        # Get the current time in the specified timezone
+        local_tz = pytz.timezone(diff_tz)
+
+        now = datetime.now(local_tz)
+        # Format the time
+        difftime2 = now.strftime("%A, %B %d, %Y, %I:%M %p")
+        st.write(f"Date and time in {city_name}: {difftime2}")
+
+def default_location(def_location = 'Tel Aviv'):
     # Input a location
     new_location = st.text_input('Enter a location:').strip()
 
     if not new_location: # This checks if the string is empty
-        print("No valid answer was provided, default location set to be Israel")
+        st.write("No valid answer was provided, default location set to be Israel")
         return def_location
 
     else: #If not empty
-        answer = st.text_input("Do you want to save this as your default location? (yes/no): ").strip().lower()
+        answer = st.selectbox('Do you want to save this as your default location?', ['yes', 'no']).strip()
 
         if answer == "yes":
-          return new_location
+            def_location = new_location
+            return new_location
         elif answer == "no":
-          return def_location
+            return def_location
         else:
-          print("No valid answer was provided, default location set to be Israel")
-          return def_location
+            st.write(f"No valid answer was provided, default location set to be {def_location}")
+            return def_location
 
 def unit_prefrences():
 
@@ -53,10 +63,13 @@ def get_weather(city_name, units):
     # Define the request parameters
     if units == 'Celsius':
         data_units = "metric"
+        temp_unit = "C"
     elif units == 'Fahrenheit':
-        data_units ="US"
+        data_units ="us"
+        temp_unit = "F"
     else:
-        data_units ="UK"
+        data_units ="sk"
+        temp_unit = "C"
 
     params = {
         "unitGroup": data_units,  # Use metric units (Celsius, km/h, etc.)
@@ -66,7 +79,7 @@ def get_weather(city_name, units):
     # Send a GET request to the API
     response = requests.get(url, params=params)
 
-    return response
+    return response, temp_unit
 
 
 def save_jason(settings_file, data):
