@@ -1,30 +1,29 @@
 import streamlit as st
-import seaborn as sns
-import matplotlib.pyplot as plt
+import json
+from app import default_location, unit_prefrences, save_jason #favorite_location,
 
 
-# st.markdown("""
-#
-# # Title
-# ## Subtitle
-#
-# - bullet 1
-# - bullet 2
-# - bullet 3
-#
-# > Amazing Quote
-#
-# """)
-#
-# st.radio("Which dessert is best?", ["Cake", "Ice Cream", "Pie"])
+settings_file = 'weather.json'
+data = {}
+with open(settings_file, 'w') as f:
+        json.dump(data, f)
 
-df = sns.load_dataset("penguins") #load dataset
+with open(settings_file) as f:
+     data = json.load(f)
 
-fig, ax = plt.subplots() # Create a new figure, get the axes object
-sns.scatterplot(data=df, x="flipper_length_mm", y="bill_length_mm", hue="species",
-                ax=ax) #Use the axes object to plot on the same figure
+def_location = default_location()
+# fav_location = favorite_location()
+units = unit_prefrences()
 
-st.pyplot(fig) #show the figure in Streamlit
+data.update ({"default_location" : def_location})
+data.update({"temperature_unit": units})
+
+# unit_prefrences()
+save_jason(settings_file, data)
+
+# Print the data
+print(data)
+st.write("Hello ,let's learn how to build a streamlit app together")
 
 
 

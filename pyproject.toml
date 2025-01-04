@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 seaborn = "^0.13.2"
+streamlit = "^1.41.1"
 
 
 [build-system]
