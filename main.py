@@ -37,8 +37,14 @@ if response.status_code == 200:
         url_data = response.json()
         forecast = url_data['days'] # Get all the days data from url_data
 
+        # Prepare the data for plotting Weekly Weather Forecast
+        dates = [day['datetime'] for day in forecast]
+        temps = [day['temp'] for day in forecast]
+
+
         # Extract and display weather data (current day)
-        current_temp = forecast[4].get('temp')
+        current_temp = temps[0] # Current temperature
+        print(current_temp)
         humidity = url_data['currentConditions']['humidity']
         description = url_data["description"]
         tz = url_data["timezone"]
@@ -51,11 +57,48 @@ if response.status_code == 200:
         st.write(f"Humidity: {humidity}%")
         st.write(f"Description: {description}")
 
-### Weekly Weather Forecast
+####
+        st.subheader(f"Temperature distribution of {city_name.title()}:")
 
-        # Prepare the data for plotting Weekly Weather Forecast
-        dates = [day['datetime'] for day in forecast]
-        temps = [day['temp'] for day in forecast]
+
+        max_temps = [day['tempmax'] for day in forecast]
+        min_temps = [day['tempmin'] for day in forecast]
+
+        min_temp = min_temps[0]  # Minimum temperature
+        print(min_temp)
+        max_temp = max_temps[0]  # Maximum temperature
+        print(max_temp)
+        # Create a figure and axis
+        fig, ax = plt.subplots(figsize=(10, 2))
+
+        # Draw the temperature range as a horizontal bar
+        ax.plot([min_temp, max_temp], [0, 0], color='skyblue', linewidth=8, solid_capstyle='round',
+                label='Temperature Range')
+
+        # Add the current temperature as a marker
+        ax.scatter(current_temp, 0, color='red', s=150, label='Current Temperature', zorder=5)
+
+        # Annotate the current temperature marker
+        ax.text(current_temp, 0.2, f'{current_temp}°C', color='red', fontsize=10, ha='center', fontweight='bold')
+
+        # Add labels for min and max temperatures
+        ax.text(min_temp, -0.4, f'{min_temp}°C', color='black', fontsize=10, ha='center')
+        ax.text(max_temp, -0.4, f'{max_temp}°C', color='black', fontsize=10, ha='center')
+
+        # Customize the axis
+        ax.set_xlim(min_temp - 5, max_temp + 5)
+        ax.set_ylim(-1, 1)
+        ax.axis('off')  # Hide axes for a cleaner look
+
+        # Add title and legend
+        ax.set_title(f'Daily Temperature Overview of {city_name.title()}', fontsize=17)
+        ax.legend(loc='upper left', fontsize=12, frameon=False)
+
+        # Show the plot
+        plt.tight_layout()
+        st.pyplot(fig)
+
+### Weekly Weather Forecast
         humidity = [day['humidity'] for day in forecast]
 
         # Create a DataFrame for easy manipulation
