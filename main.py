@@ -2,6 +2,7 @@ import streamlit as st, json,  pandas as pd, requests
 import datetime as dt, pytz
 from datetime import datetime, timezone
 from app import default_location, unit_prefrences, save_jason, get_weather, date_time
+import numpy as np
 
 import matplotlib.pyplot as plt
 
@@ -66,6 +67,7 @@ if response.status_code == 200:
 
         })
 
+
         # Plot the weather data
         # Temperature plot
         fig, ax = plt.subplots(figsize=(8, 4))
@@ -97,6 +99,52 @@ if response.status_code == 200:
         # Display the map
         st.subheader(f"Map location of {city_name.title()}:")
         st.map(map_data, color = [255, 0, 0])
+
+#Compass view
+        # Extract data for the wind
+        days = url_data['days']
+        wind_direction = days[0]['windspeed']  # Wind speed
+        wind_degrees = days[0]['winddir'] # Wind direction in degrees
+
+        # Create the compass plot for wind direction
+        fig, ax = plt.subplots(figsize=(5, 5))  # Slightly larger figure for better clarity
+        ax.set_xlim(-1.5, 1.5)
+        ax.set_ylim(-1.5, 1.5)
+
+        st.subheader(f"Compass of Wind Speed and Direction:")
+        # Display wind data to the side using columns
+        col1, col2 = st.columns([1, 3])  # Creates two columns with different widths
+
+        # Place the wind speed and direction information in the second column
+        with col1:
+                st.write("")  # Empty space to align content
+        with col2:
+                st.write(f"Wind Speed: {wind_direction} km/h")
+                st.write(f"Wind Direction: {wind_degrees}°")
+
+        # Plot the compass as a circle
+        circle = plt.Circle((0, 0), 0.5, edgecolor='black', facecolor='white', lw=2)
+        ax.add_artist(circle)
+
+        # Plot arrows for each cardinal direction
+        cardinal_directions = ['N', 'E', 'S', 'W']
+        angle = np.linspace(0, 2 * np.pi, 4, endpoint=False)  # N, E, S, W
+        for i, direction in enumerate(cardinal_directions):
+                ax.text(np.cos(angle[i]) * 0.6, np.sin(angle[i]) * 0.6, direction, ha='center', va='center',
+                        fontweight='bold', fontsize=12, color='black')  # Larger font size for better readability
+
+        # Calculate wind direction arrow based on degrees
+        angle_rad = np.deg2rad(wind_degrees)
+        ax.arrow(0, 0, 0.3 * np.cos(angle_rad), 0.3 * np.sin(angle_rad), head_width=0.1, head_length=0.2, fc='blue',
+                 ec='blue')
+
+        # Customize plot appearance
+        ax.set_aspect('equal', 'box')
+        ax.axis('off')  # Turn off axis lines
+        fig.tight_layout()  # Adjust layout to ensure everything fits
+
+        # Display the plot
+        st.pyplot(fig)
 
 else:
         st.write(f"Failed to fetch weather data for {city_name}. HTTP Status Code: {response.status_code}")
