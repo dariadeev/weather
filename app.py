@@ -4,7 +4,6 @@ import streamlit as st
 
 def default_location(def_location = 'Israel'):
     # Input a location
-    # new_location = input(f"Enter a location: ").strip()
     new_location = st.text_input('Enter a location:').strip()
 
     if not new_location: # This checks if the string is empty
@@ -12,7 +11,7 @@ def default_location(def_location = 'Israel'):
         return def_location
 
     else: #If not empty
-        answer = st.text_input("Save this as the default location? (yes/no): ").strip().lower()
+        answer = st.text_input("Do you want to save this as your default location? (yes/no): ").strip().lower()
 
         if answer == "yes":
           return new_location
@@ -23,7 +22,8 @@ def default_location(def_location = 'Israel'):
           return def_location
 
 def unit_prefrences():
-    units = st.text_input("Enter your preference setting for temperature units (Celsius or Fahrenheit): ").strip()
+
+    units = st.radio('Pick your preference temperature units', ['Celsius', 'Fahrenheit']).strip()
 
     if not units:  # This checks if the string is empty
         return "Celsius"
@@ -43,7 +43,7 @@ def unit_prefrences():
 #     return
 
 # Function to get weather for a specified city
-def get_weather(city_name):
+def get_weather(city_name, units):
     # Encode the city name for use in the URL (e.g., spaces to %20)
     city_name = city_name
 
@@ -51,17 +51,22 @@ def get_weather(city_name):
     url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{city_name}"
 
     # Define the request parameters
+    if units == 'Celsius':
+        data_units = "metric"
+    elif units == 'Fahrenheit':
+        data_units ="US"
+    else:
+        data_units ="UK"
+
     params = {
-        "unitGroup": "metric",  # Use metric units (Celsius, km/h, etc.)
+        "unitGroup": data_units,  # Use metric units (Celsius, km/h, etc.)
         "key": "CXHEHFTH24228RKB5W4WQ5SGH",  # Replace with your actual API key
         "contentType": "json"  # Set content type to JSON
     }
-
     # Send a GET request to the API
     response = requests.get(url, params=params)
 
     return response
-
 
 
 def save_jason(settings_file, data):

@@ -2,6 +2,7 @@ import streamlit as st
 import json
 from app import default_location, unit_prefrences, save_jason, get_weather #favorite_location,
 
+st.title("Welcome to Weather Application")
 
 settings_file = 'weather.json'
 data = {}
@@ -22,7 +23,7 @@ data.update({"temperature_unit": units})
 save_jason(settings_file, data)
 
 # Print the data
-print(data)
+# print(data)
 st.write(data)
 
 # Ask the user to enter a city name
@@ -30,7 +31,7 @@ st.write(data)
 city_name = data["default_location"]
 
 # Get and display the weather for the entered city
-response = get_weather(city_name)
+response = get_weather(city_name, units)
 
 # Check if the request was successful
 if response.status_code == 200:
@@ -48,7 +49,8 @@ if response.status_code == 200:
 
 
         # Print the weather information
-        st.write(f"Weather for {city_name}:")
+
+        st.header(f"Weather for {city_name.title()}:")
         st.write(f"Current Temperature: {current_temp}°C")
         st.write(f"Humidity: {humidity}%")
         st.write(f"description: {description}")
