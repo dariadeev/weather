@@ -35,11 +35,10 @@ response, temp_unit = get_weather(city_name, units)
 if response.status_code == 200:
         # Parse the JSON response
         url_data = response.json()
+        forecast = url_data['days'] # Get all the days data from url_data
 
-
-        # Extract and display weather data
-        des = url_data['days']
-        current_temp = des[4].get('temp', 'No date available')
+        # Extract and display weather data (current day)
+        current_temp = forecast[4].get('temp')
         humidity = url_data['currentConditions']['humidity']
         description = url_data["description"]
         tz = url_data["timezone"]
@@ -52,9 +51,9 @@ if response.status_code == 200:
         st.write(f"Humidity: {humidity}%")
         st.write(f"Description: {description}")
 
-# Prepare the data for plotting
-        forecast = url_data.get('days', [])
+### Weekly Weather Forecast
 
+        # Prepare the data for plotting Weekly Weather Forecast
         dates = [day['datetime'] for day in forecast]
         temps = [day['temp'] for day in forecast]
         humidity = [day['humidity'] for day in forecast]
@@ -66,7 +65,6 @@ if response.status_code == 200:
                 'Humidity (%)': humidity
 
         })
-
 
         # Plot the weather data
         # Temperature plot
@@ -86,6 +84,8 @@ if response.status_code == 200:
         fig.tight_layout()
         st.pyplot(fig)
 
+### Map Plot
+
         # Extract location latitude and longitude
         latitude = float(url_data.get('latitude', 0))  # Ensure we get latitude
         longitude = float(url_data.get('longitude', 0))  # Ensure we get longitude
@@ -100,11 +100,11 @@ if response.status_code == 200:
         st.subheader(f"Map location of {city_name.title()}:")
         st.map(map_data, color = [255, 0, 0])
 
-#Compass view
+###Compass view
+
         # Extract data for the wind
-        days = url_data['days']
-        wind_direction = days[0]['windspeed']  # Wind speed
-        wind_degrees = days[0]['winddir'] # Wind direction in degrees
+        wind_direction = forecast[0]['windspeed']  # Wind speed
+        wind_degrees = forecast[0]['winddir'] # Wind direction in degrees
 
         # Create the compass plot for wind direction
         fig, ax = plt.subplots(figsize=(5, 5))  # Slightly larger figure for better clarity
