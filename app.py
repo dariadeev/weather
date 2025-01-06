@@ -1,6 +1,6 @@
 import json, requests, streamlit as st
 import datetime as dt, pytz
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 def date_time(city_name, diff_tz=None):
@@ -10,24 +10,20 @@ def date_time(city_name, diff_tz=None):
         now = datetime.now(local_tz)
         # Format the time
         difftime2 = now.strftime("%A, %B %d, %Y, %I:%M %p")
-        st.write(f"Date and time in {city_name}: {difftime2}")
+        diff_utc = now.strftime("%z")
+        st.write(f"Date and time in {city_name}: {difftime2}, UTC is {diff_utc}")
 
-def default_location(def_location = 'Tel Aviv'):
+def selected_location(def_loc = 'Tel Aviv'):
     # Input a location
     new_location = st.text_input('Enter a location:').strip()
 
     if not new_location: # This checks if the string is empty
-        st.write("No valid answer was provided, default location set to be Tel Aviv")
-        return def_location
+        st.write("Please select location for weather information, default location set to be Tel Aviv")
+        return def_loc
 
     else: #If not empty
-        answer = st.selectbox('Do you want to save this as your default location?', ['yes', 'no']).strip()
 
-        if answer == "yes":
-            def_location = new_location
-            return new_location
-        elif answer == "no":
-            return def_location
+        return new_location
 
 
 def unit_prefrences():
@@ -41,11 +37,12 @@ def unit_prefrences():
 
 # Function to get weather for a specified city
 def get_weather(city_name, units):
-    # Encode the city name for use in the URL (e.g., spaces to %20)
+
     city_name = city_name
 
     # Define the URL for the Visual Crossing API
     url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{city_name}"
+
     temp_unit = "C"
     # Define the request parameters
     if units == 'Celsius':
@@ -59,7 +56,6 @@ def get_weather(city_name, units):
     params = {
         "unitGroup": data_units,  # Use metric units (Celsius, km/h, etc.)
         "key": "CXHEHFTH24228RKB5W4WQ5SGH",  # Replace with your actual API key
-        # "contentType": "json"  # Set content type to JSON
     }
     # Send a GET request to the API
     response = requests.get(url, params=params)
