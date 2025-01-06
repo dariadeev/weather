@@ -22,8 +22,4 @@ python = "^3.12"
 seaborn = "^0.13.2"
 streamlit = "^1.41.1"
 requires = ["poetry-core"]
-<<<<<<< HEAD
 build-backend = "poetry.core.masonry.api"
-=======
-build-backend = "poetry.core.masonry.api"
->>>>>>> 47cc09ea5ba039508d4e61e26fbd6a7d7099fdf0
