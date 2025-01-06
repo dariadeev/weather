@@ -1,4 +1,5 @@
 # Weather Application
+Streamlit url - https://weather-pytfezznaygqk4hjja2e5t.streamlit.app/
 
 ## Description
 The Weather Application is an interactive tool that provides weather updates for a user-specified location. Built using Python and Streamlit, the application fetches real-time weather data using an API and displays information such as temperature, humidity, description, and timezone.
