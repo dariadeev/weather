@@ -1,6 +1,6 @@
 import json, requests, streamlit as st
 import datetime as dt, pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def date_time(city_name, diff_tz=None):
@@ -11,7 +11,7 @@ def date_time(city_name, diff_tz=None):
         # Format the time
         difftime2 = now.strftime("%A, %B %d, %Y, %I:%M %p")
         diff_utc = now.strftime("%z")
-        st.write(f"Date and time in {city_name}: {difftime2}, UTC is {diff_utc}")
+        st.write(f"Date and time in {city_name}: {difftime2}, UTC is {diff_utc} (UK UTC is +0000)")
 
 def selected_location(def_loc = 'Tel Aviv'):
     # Input a location
