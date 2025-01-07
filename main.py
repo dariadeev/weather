@@ -74,6 +74,26 @@ def main():
                 # Create a figure and axis
                 fig, ax = plt.subplots(figsize=(10, 3))
 
+                # Set background color based on dark mode preference
+                if dark_mode == "On":
+                        fig.patch.set_facecolor('black')
+                        ax.set_facecolor('black')
+                        horizontal_bar = 'black'
+                        title_color = 'white'
+                        label_color = 'white'
+                        grid_color = 'white'
+                        tick_color = 'white'
+                        plot_color = 'lightblue'
+                else:
+                        fig.patch.set_facecolor('white')
+                        ax.set_facecolor('white')
+                        horizontal_bar = 'white'
+                        title_color = 'black'
+                        label_color = 'black'
+                        grid_color = 'gray'
+                        tick_color = 'black'
+                        plot_color = 'blue'
+
                 # Generate the gradient effect from -50°C to 50°C
                 cmap = plt.get_cmap("coolwarm")
                 norm = plt.Normalize(vmin=-50, vmax=50)
@@ -82,7 +102,7 @@ def main():
                 temperature_range = np.linspace(-50, 50, 100)
 
                 # Plot the gradient as a horizontal bar
-                ax.barh(0, 100, left=0, color='white', height=0.3)
+                ax.barh(0, 100, left=0, color=horizontal_bar, height=0.3)
 
                 # Draw the temperature range as a horizontal bar
                 ax.plot([min_temp, max_temp], [0, 0], color='grey', linewidth=8, solid_capstyle='round',
@@ -100,11 +120,11 @@ def main():
                 ax.scatter(current_temp, 0, color=temp_color, s=150, label='Current Temperature', zorder=5)
 
                 # Annotate the current temperature marker
-                ax.text(current_temp, 0.2, f'{current_temp}°{temp_unit}', color=temp_color, fontsize=10, ha='center', fontweight='bold')
+                ax.text(current_temp, 0.2, f'{current_temp}°{temp_unit}', color=temp_color, fontsize=14, ha='center', fontweight='bold')
 
                 # Add labels for min and max temperatures
-                ax.text(min_temp, -0.25, f'{min_temp}°{temp_unit}', color='black', fontsize=10, ha='center')
-                ax.text(max_temp, -0.25, f'{max_temp}°{temp_unit}', color='black', fontsize=10, ha='center')
+                ax.text(min_temp, -0.25, f'{min_temp}°{temp_unit}', color=label_color, fontsize=12, ha='center')
+                ax.text(max_temp, -0.25, f'{max_temp}°{temp_unit}', color=label_color, fontsize=12, ha='center')
 
                 # Customize the axis
                 ax.set_xlim(min_temp - 5, max_temp + 5)
@@ -112,8 +132,10 @@ def main():
                 ax.axis('off')  # Hide axes for a cleaner look
 
                 # Add title and legend
-                ax.set_title(f'Daily Temperature Overview of {city_name.title()}', fontsize=17)
-                ax.legend(loc='upper left', fontsize=10, frameon=False)
+                ax.set_title(f'Daily Temperature Overview of {city_name.title()}', fontsize=17, color=title_color)
+                leg = ax.legend(loc='upper left', fontsize=12, frameon=False)
+                for text in leg.get_texts():
+                        text.set_color(title_color)
 
                 # Show the plot
                 plt.tight_layout()
@@ -156,25 +178,15 @@ def main():
                 if dark_mode == "On":
                         fig.patch.set_facecolor('black')
                         ax.set_facecolor('black')
-                        title_color = 'white'
-                        label_color = 'white'
-                        grid_color = 'white'
-                        tick_color = 'white'
-                        plot_color = 'lightblue'
                 else:
                         fig.patch.set_facecolor('white')
                         ax.set_facecolor('white')
-                        title_color = 'black'
-                        label_color = 'black'
-                        grid_color = 'gray'
-                        tick_color = 'black'
-                        plot_color = 'blue'
 
                 # Set grid and axis colors
                 ax.grid(True, color=grid_color, linestyle='--', alpha=0.5)
                 ax.tick_params(axis='both', colors=tick_color)  # Set tick color based on theme
 
-                ax.plot(df["Date"], df[f'Temperature {temp_unit}'], marker='o', color='blue', label=f'Temperature {temp_unit}', alpha=0.6)
+                ax.plot(df["Date"], df[f'Temperature {temp_unit}'], marker='o', color=plot_color, label=f'Temperature {temp_unit}', alpha=0.6)
                 ax.set_ylabel(f'Temperature {temp_unit}')
                 ax.set_title(f"Weekly Weather Forecast for {formatted_date} {city_name.title()}", color=title_color)
 
