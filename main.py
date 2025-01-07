@@ -187,7 +187,7 @@ def main():
                 ax.tick_params(axis='both', colors=tick_color)  # Set tick color based on theme
 
                 ax.plot(df["Date"], df[f'Temperature {temp_unit}'], marker='o', color=plot_color, label=f'Temperature {temp_unit}', alpha=0.6)
-                ax.set_ylabel(f'Temperature {temp_unit}')
+                ax.set_ylabel(f'Temperature {temp_unit}', color=label_color)
                 ax.set_title(f"Weekly Weather Forecast for {formatted_date} {city_name.title()}", color=title_color)
 
                 # Replace x-axis ticks with labels
