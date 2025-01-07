@@ -1,7 +1,14 @@
 import json, requests, streamlit as st
 import datetime as dt, pytz
-from datetime import datetime, timedelta
+from datetime import datetime
 
+def dark_mode_on_off():
+    mode = st.radio('Dark mode', ['On', 'Off']).strip()
+
+    if not mode:  # This checks if the string is empty
+        return "On"
+    else:
+        return mode
 
 def date_time(city_name, diff_tz=None):
         # Get the current time in the specified timezone

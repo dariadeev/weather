@@ -1,7 +1,7 @@
-import streamlit as st, json,  pandas as pd, requests
-from app import selected_location, unit_prefrences, save_jason, get_weather, date_time
-import numpy as np
+import streamlit as st, json,  pandas as pd, numpy as np
 import matplotlib.pyplot as plt
+from datetime import datetime
+from app import selected_location, unit_prefrences, save_jason, get_weather, date_time, dark_mode_on_off
 
 st.title("Welcome to Weather Application")
 settings_file = 'weather.json'
@@ -20,6 +20,9 @@ def main():
 
         data.update ({"selected_location" : location})
         data.update({"temperature_unit": units})
+
+        # Check if the user prefers dark mode
+        dark_mode = dark_mode_on_off()
 
         # unit_prefrences()
         save_jason(settings_file, data)
@@ -55,8 +58,8 @@ def main():
                 st.write(f"Description: {conditions}, {description}")
 
         #### Temperature distribution
-
                 st.subheader(f"Temperature distribution of {city_name.title()}:")
+
         #### Daily temp overview
                 max_temps = [day['tempmax'] for day in forecast]
                 min_temps = [day['tempmin'] for day in forecast]
@@ -119,30 +122,73 @@ def main():
 
         ### Weekly Weather Forecast
                 # Prepare the data for plotting Weekly Weather Forecast
-                dates = [day['datetime'] for day in forecast]
+
+                # Today date
+                today = datetime.now().date()
+                dates = [datetime.strptime(day['datetime'], "%Y-%m-%d").date() for day in forecast]
                 temps = [day['temp'] for day in forecast]
                 humidity = [day['humidity'] for day in forecast]
 
-                # Create a DataFrame for easy manipulation
-                df = pd.DataFrame({
-                        'Date': pd.to_datetime(dates),
-                        f'Temperature {temp_unit}': temps,
-                        'Humidity (%)': humidity
+                # Map dates to labels
+                def date_to_label(date):
+                        if date == today:
+                                return "Today"
+                        else:
+                                return date.strftime("%a")  # Day name
 
+                date_labels = [date_to_label(date) for date in dates]
+
+                df = pd.DataFrame({
+                        'Date': dates[:7],
+                        'Date Label': date_labels[:7],
+                        f'Temperature {temp_unit}': temps[:7],
+                        'Humidity (%)': humidity[:7],
                 })
+
+                # Format today's date for the title
+                formatted_date = today.strftime("%d.%m.%y")
 
                 # Plot the weather data
                 # Temperature plot
                 fig, ax = plt.subplots(figsize=(8, 4))
+
+                # Set background color based on dark mode preference
+                if dark_mode == "On":
+                        fig.patch.set_facecolor('black')
+                        ax.set_facecolor('black')
+                        title_color = 'white'
+                        label_color = 'white'
+                        grid_color = 'white'
+                        tick_color = 'white'
+                        plot_color = 'lightblue'
+                else:
+                        fig.patch.set_facecolor('white')
+                        ax.set_facecolor('white')
+                        title_color = 'black'
+                        label_color = 'black'
+                        grid_color = 'gray'
+                        tick_color = 'black'
+                        plot_color = 'blue'
+
+                # Set grid and axis colors
+                ax.grid(True, color=grid_color, linestyle='--', alpha=0.5)
+                ax.tick_params(axis='both', colors=tick_color)  # Set tick color based on theme
+
                 ax.plot(df["Date"], df[f'Temperature {temp_unit}'], marker='o', color='blue', label=f'Temperature {temp_unit}', alpha=0.6)
-                ax.set_xlabel('Date')
                 ax.set_ylabel(f'Temperature {temp_unit}')
-                ax.set_title(f"Weekly Weather Forecast for {city_name.title()}")
+                ax.set_title(f"Weekly Weather Forecast for {formatted_date} {city_name.title()}", color=title_color)
+
+                # Replace x-axis ticks with labels
+                ax.set_xticks(df["Date"])
+                ax.set_xticklabels(df["Date Label"], color=label_color)
 
                 # Humidity plot
                 ax2 = ax.twinx()
-                ax2.plot(df['Date'], df['Humidity (%)'], marker='x', label='Humidity (%)', color='tab:orange')
-                ax2.set_ylabel('Humidity (%)')
+                ax2.plot(df['Date'], df['Humidity (%)'], marker='o', label='Humidity (%)', color='tab:orange')
+                ax2.set_ylabel('Humidity (%)', color=label_color)
+
+                # Set the grid and axis ticks to light color for the second axis
+                ax2.tick_params(axis='both', colors=tick_color)  # Set tick color to white
 
                 fig.tight_layout()
                 st.pyplot(fig)
